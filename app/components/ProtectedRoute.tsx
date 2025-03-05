@@ -13,7 +13,6 @@ export default function ProtectedRoute({
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
-		// Short timeout to ensure the auth state is loaded from localStorage
 		const timer = setTimeout(() => {
 			setIsLoading(false);
 			if (!isAuthenticated) {
@@ -24,16 +23,13 @@ export default function ProtectedRoute({
 		return () => clearTimeout(timer);
 	}, [isAuthenticated, router]);
 
-	// Show nothing during the initial loading
 	if (isLoading) {
 		return null;
 	}
 
-	// If not authenticated after loading, show nothing
 	if (!isAuthenticated) {
 		return null;
 	}
 
-	// If authenticated, show the children
 	return <>{children}</>;
 }

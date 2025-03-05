@@ -101,7 +101,6 @@ export default function LeadForm({ isHomePage = false }: LeadFormProps) {
 		setFileError(null);
 
 		if (file) {
-			// Check file type
 			const validTypes = [
 				"application/pdf",
 				"application/msword",
