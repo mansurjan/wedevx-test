@@ -8,18 +8,25 @@ import styles from "./Dashboard.module.css";
 
 export default function LeadsManagement() {
 	const dispatch = useAppDispatch();
-	const { leads, status } = useAppSelector((state) => state.leads);
+	const { leads, status, error } = useAppSelector((state) => state.leads);
 	const [searchTerm, setSearchTerm] = useState("");
 	const [statusFilter, setStatusFilter] = useState("all");
 	const [currentPage, setCurrentPage] = useState(1);
+	const [updateError, setUpdateError] = useState<string | null>(null);
 	const leadsPerPage = 5;
 
 	useEffect(() => {
 		dispatch(fetchLeads());
 	}, [dispatch]);
 
-	const handleStatusUpdate = (id: string) => {
-		dispatch(updateLeadStatus({ id, status: "REACHED_OUT" }));
+	const handleStatusUpdate = async (id: string) => {
+		try {
+			setUpdateError(null);
+			await dispatch(updateLeadStatus({ id, status: "REACHED_OUT" })).unwrap();
+		} catch (err) {
+			setUpdateError("Failed to update lead status. Please try again.");
+			console.error("Error updating lead status:", err);
+		}
 	};
 
 	const filteredLeads = leads.filter((lead) => {
@@ -55,6 +62,16 @@ export default function LeadsManagement() {
 					</Link>
 				</div>
 
+				{error && (
+					<div className={styles.errorMessage}>
+						Error loading leads: {error}
+					</div>
+				)}
+
+				{updateError && (
+					<div className={styles.errorMessage}>{updateError}</div>
+				)}
+
 				<div className={styles.filters}>
 					<input
 						type="search"
@@ -74,46 +91,50 @@ export default function LeadsManagement() {
 					</select>
 				</div>
 
-				<table className={styles.leadsTable}>
-					<thead>
-						<tr>
-							<th>Name</th>
-							<th>Submitted</th>
-							<th>Status</th>
-							<th>Country</th>
-							<th>Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{currentLeads.map((lead) => (
-							<tr key={lead.id}>
-								<td>{`${lead.firstName} ${lead.lastName}`}</td>
-								<td className={styles.submittedAt}>
-									{lead.submittedAt?.slice(0, 10)}
-								</td>
-								<td>
-									<span className={`${styles.status} ${styles[lead.status]}`}>
-										{lead.status}
-									</span>
-								</td>
-								<td>
-									{lead.visasOfInterest.map((country) => (
-										<p key={country}>{country}</p>
-									))}
-								</td>
-								<td>
-									{lead.status === "PENDING" && (
-										<button
-											onClick={() => handleStatusUpdate(lead.id)}
-											className={styles.actionButton}>
-											Reached Out
-										</button>
-									)}
-								</td>
+				{leads.length === 0 && !error ? (
+					<div className={styles.noLeads}>No leads found</div>
+				) : (
+					<table className={styles.leadsTable}>
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th>Submitted</th>
+								<th>Status</th>
+								<th>Country</th>
+								<th>Actions</th>
 							</tr>
-						))}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{currentLeads.map((lead) => (
+								<tr key={lead.id}>
+									<td>{`${lead.firstName} ${lead.lastName}`}</td>
+									<td className={styles.submittedAt}>
+										{lead.submittedAt?.slice(0, 10)}
+									</td>
+									<td>
+										<span className={`${styles.status} ${styles[lead.status]}`}>
+											{lead.status}
+										</span>
+									</td>
+									<td>
+										{lead.visasOfInterest.map((country) => (
+											<p key={country}>{country}</p>
+										))}
+									</td>
+									<td>
+										{lead.status === "PENDING" && (
+											<button
+												onClick={() => handleStatusUpdate(lead.id)}
+												className={styles.actionButton}>
+												Reached Out
+											</button>
+										)}
+									</td>
+								</tr>
+							))}
+						</tbody>
+					</table>
+				)}
 
 				{totalPages > 1 && (
 					<div className={styles.pagination}>

@@ -24,6 +24,8 @@ export default function LeadForm() {
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
 	const [attemptedSubmit, setAttemptedSubmit] = useState(false);
 	const [isClient, setIsClient] = useState(false);
+	const [submitError, setSubmitError] = useState<string | null>(null);
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	useEffect(() => {
 		setIsClient(true);
@@ -32,6 +34,7 @@ export default function LeadForm() {
 	const handleSubmit = async (event: React.FormEvent) => {
 		event.preventDefault();
 		setAttemptedSubmit(true);
+		setSubmitError(null);
 
 		const errors = validateForm(formData);
 		if (Object.keys(errors).length > 0) {
@@ -40,6 +43,7 @@ export default function LeadForm() {
 		}
 
 		try {
+			setIsSubmitting(true);
 			const response = await fetch("/api/leads", {
 				method: "POST",
 				headers: {
@@ -49,13 +53,24 @@ export default function LeadForm() {
 			});
 
 			if (!response.ok) {
-				throw new Error("Failed to submit form");
+				const errorData = await response.json().catch(() => null);
+				throw new Error(
+					errorData?.message ||
+						`Error ${response.status}: Failed to submit form`
+				);
 			}
 
 			setSubmitted(true);
 			setFieldErrors({});
 		} catch (error) {
 			console.error("Error submitting form:", error);
+			setSubmitError(
+				error instanceof Error
+					? error.message
+					: "An unexpected error occurred. Please try again."
+			);
+		} finally {
+			setIsSubmitting(false);
 		}
 	};
 
@@ -150,6 +165,9 @@ export default function LeadForm() {
 					based on your goals
 				</p>
 			</div>
+
+			{submitError && <div className={styles.errorMessage}>{submitError}</div>}
+
 			<form onSubmit={handleSubmit}>
 				<div className={styles.formGroup}>
 					<input
@@ -291,8 +309,11 @@ export default function LeadForm() {
 					/>
 				</div>
 
-				<button type="submit" className={styles.submitButton}>
-					Submit
+				<button
+					type="submit"
+					className={styles.submitButton}
+					disabled={isSubmitting}>
+					{isSubmitting ? "Submitting..." : "Submit"}
 				</button>
 			</form>
 		</div>

@@ -161,3 +161,20 @@
 	background-color: #e8f5e9;
 	color: #388e3c;
 }
+
+.errorMessage {
+	background-color: #ffebee;
+	color: #d32f2f;
+	padding: 12px 16px;
+	border-radius: 4px;
+	margin-bottom: 16px;
+	font-size: 0.9rem;
+	border-left: 4px solid #d32f2f;
+}
+
+.noLeads {
+	text-align: center;
+	padding: 2rem;
+	color: #666;
+	font-size: 1.1rem;
+}
