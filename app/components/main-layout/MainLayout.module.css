@@ -1,0 +1,18 @@
+.layout {
+	display: flex;
+	background: #fefefe;
+	height: 100vh;
+}
+
+.main {
+	flex: 1;
+	padding: 1rem;
+}
+
+@media (max-width: 1200px) {
+	.layout {
+		display: flex;
+		flex-direction: column;
+		height: 100vh;
+	}
+}

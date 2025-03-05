@@ -1,33 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Alma Immigration Lead Management System
+
+A Next.js application for managing immigration visa leads and applications.
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Features](#features)
+- [System Architecture](#system-architecture)
+- [Getting Started](#getting-started)
+- [Component Structure](#component-structure)
+- [API Endpoints](#api-endpoints)
+
+## Overview
+
+This application provides a streamlined process for collecting and managing immigration visa leads. It includes a public-facing form for potential clients and an admin dashboard for managing submissions.
+
+## Features
+
+- **Lead Form**: Collects user information with validation
+- **Admin Dashboard**: Manage and track leads
+- **Search & Filter**: Find leads by name or status
+- **Pagination**: Navigate through lead entries efficiently
+- **Status Management**: Update lead status from pending to reached out
+
+## System Architecture
+
+### Architecture Diagram
+
+┌─────────────────────────────────────────────────────────────┐
+│ Client Browser │
+└───────────────────────────────┬─────────────────────────────┘
+│
+▼
+┌─────────────────────────────────────────────────────────────┐
+│ Next.js Application │
+│ ┌─────────────────┐ ┌─────────────────┐ ┌────────────┐ │
+│ │ React UI │ │ API Routes │ │ Redux │ │
+│ │ Components │◄──┼──► (Server) │◄─┼─► Store │ │
+│ └─────────────────┘ └─────────────────┘ └────────────┘ │
+└───────────────────────────────┬─────────────────────────────┘
+│
+▼
+┌─────────────────────────────────────────────────────────────┐
+│ Data Storage │
+│ │
+│ ┌─────────────────────────────────────────────────────┐ │
+│ │ leads.json │ │
+│ └─────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+
+### Technology Stack
+
+- **Frontend**: React.js, Next.js
+- **State Management**: Redux Toolkit
+- **Styling**: CSS Modules
+- **Data Storage**: JSON file (leads.json)
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Node.js 16.x or higher
+- npm or yarn
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Clone the repository:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+   ```bash
+   git clone https://github.com/mansurjan/alma-immigration.git
+   cd alma-immigration
+   ```
 
-## Learn More
+2. Install dependencies:
 
-To learn more about Next.js, take a look at the following resources:
+   ```bash
+   npm install
+   ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+3. Run the development server:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Component Structure
+
+### Core Components
+
+- **Lead Form**: Collects user information for visa applications
+- **Dashboard**: Admin interface to manage leads
+- **Main Layout**: Provides consistent layout across pages
+
+### Data Flow
+
+#### Lead Submission Flow
+
+1. User fills out the lead form
+2. Client-side validation occurs
+3. Form data is submitted to `/api/leads` endpoint
+4. New lead is added to leads.json
+5. Thank you page is displayed to the user
+
+#### Lead Management Flow
+
+1. Dashboard loads and fetches leads
+2. Admin can filter, search, and paginate leads
+3. Admin can update lead status
+4. Status updates are persisted to leads.json
+
+## API Endpoints
+
+- **GET /api/leads**: Retrieve all leads
+- **POST /api/leads**: Create a new lead
+- **PATCH /api/leads**: Update lead status
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Deploy on Vercel
 
