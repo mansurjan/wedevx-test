@@ -1,5 +1,6 @@
 import Sidebar from "../sidebar/Sidebar";
 import styles from "./MainLayout.module.css";
+import ProtectedRoute from "../ProtectedRoute";
 
 export default function MainLayout({
 	children,
@@ -7,9 +8,11 @@ export default function MainLayout({
 	children: React.ReactNode;
 }) {
 	return (
-		<div className={styles.layout}>
-			<Sidebar />
-			<main className={styles.main}>{children}</main>
-		</div>
+		<ProtectedRoute>
+			<div className={styles.layout}>
+				<Sidebar />
+				<main className={styles.main}>{children}</main>
+			</div>
+		</ProtectedRoute>
 	);
 }

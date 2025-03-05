@@ -57,7 +57,7 @@ export default function LeadsManagement() {
 			<div className={styles.container}>
 				<div className={styles.header}>
 					<h2>Leads</h2>
-					<Link href="/form" className={styles.addLeadButton}>
+					<Link href="/" className={styles.addLeadButton}>
 						Add New Lead
 					</Link>
 				</div>

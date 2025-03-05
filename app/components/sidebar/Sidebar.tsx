@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import styles from "./Sidebar.module.css";
+import { useAuth } from "@/lib/auth";
 
 const SIDEBAR_MENU = [
 	{
 		label: "Leads",
-		href: "/",
+		href: "/dashboard",
 	},
 	{
 		label: "Settings",
@@ -20,9 +21,16 @@ const SIDEBAR_MENU = [
 
 export default function Sidebar() {
 	const pathname = usePathname();
+	const router = useRouter();
+	const { user, logout } = useAuth();
 
 	const isActive = (path: string) => {
 		return pathname === path ? styles.active : "";
+	};
+
+	const handleLogout = () => {
+		logout();
+		router.push("/login");
 	};
 
 	return (
@@ -44,8 +52,11 @@ export default function Sidebar() {
 				</ul>
 			</nav>
 			<div className={styles.user}>
-				<div className={styles.avatar}>A</div>
-				<div className={styles.username}>Admin</div>
+				<div className={styles.avatar}>{user?.name?.[0] || "A"}</div>
+				<div className={styles.username}>{user?.name || "Admin"}</div>
+				<button onClick={handleLogout} className={styles.logoutButton}>
+					Logout
+				</button>
 			</div>
 		</div>
 	);

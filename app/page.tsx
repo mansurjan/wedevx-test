@@ -1,5 +1,5 @@
-import LeadsManagement from "./dashboard/page";
+import LeadForm from "./components/lead/LeadForm";
 
 export default function Home() {
-	return <LeadsManagement />;
+	return <LeadForm isHomePage={true} />;
 }

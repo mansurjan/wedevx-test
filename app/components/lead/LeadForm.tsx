@@ -18,7 +18,11 @@ interface FieldErrors {
 	[key: string]: string;
 }
 
-export default function LeadForm() {
+interface LeadFormProps {
+	isHomePage?: boolean;
+}
+
+export default function LeadForm({ isHomePage = false }: LeadFormProps) {
 	const [formData, setFormData] = useState<LeadFormData>({});
 	const [submitted, setSubmitted] = useState(false);
 	const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -26,6 +30,7 @@ export default function LeadForm() {
 	const [isClient, setIsClient] = useState(false);
 	const [submitError, setSubmitError] = useState<string | null>(null);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [fileError, setFileError] = useState<string | null>(null);
 
 	useEffect(() => {
 		setIsClient(true);
@@ -93,7 +98,20 @@ export default function LeadForm() {
 
 	const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 		const file = event.target.files?.[0];
+		setFileError(null);
+
 		if (file) {
+			// Check file type
+			const validTypes = [
+				"application/pdf",
+				"application/msword",
+				"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+			];
+			if (!validTypes.includes(file.type)) {
+				setFileError("Please upload a PDF or Word document");
+				return;
+			}
+
 			const reader = new FileReader();
 			reader.onload = () => {
 				setFormData({ ...formData, resume: reader.result as string });
@@ -116,33 +134,21 @@ export default function LeadForm() {
 			<div className={styles.thankYouContainer}>
 				<div className={styles.thankYouContent}>
 					<div className={styles.documentIcon}>
-						<svg
-							width="80"
-							height="80"
-							viewBox="0 0 80 80"
-							fill="none"
-							xmlns="http://www.w3.org/2000/svg">
-							<path
-								d="M50 10H20C17.3478 10 14.8043 11.0536 12.9289 12.9289C11.0536 14.8043 10 17.3478 10 20V60C10 62.6522 11.0536 65.1957 12.9289 67.0711C14.8043 68.9464 17.3478 70 20 70H60C62.6522 70 65.1957 68.9464 67.0711 67.0711C68.9464 65.1957 70 62.6522 70 60V30L50 10Z"
-								fill="#C4B5FD"
-							/>
-							<path
-								d="M30 40H50M30 50H50M50 10V30H70"
-								stroke="#7C3AED"
-								strokeWidth="2"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-							/>
-						</svg>
+						<DocumentIcon />
 					</div>
 					<h1>Thank You</h1>
 					<p>
 						Your information was submitted to our team of immigration attorneys.
 						Expect an email from hello@tryalma.ai.
 					</p>
-					<Link href="/" className={styles.homeButton}>
-						Go Back to Homepage
-					</Link>
+					<div className={styles.buttonContainer}>
+						<Link href="/" className={styles.homeButton}>
+							Submit Another Form
+						</Link>
+						<Link href="/dashboard" className={styles.dashboardButton}>
+							Go to Dashboard
+						</Link>
+					</div>
 				</div>
 			</div>
 		);
@@ -150,9 +156,11 @@ export default function LeadForm() {
 
 	return (
 		<div className={styles.formContainer}>
-			<Link href="/" className={styles.backButton}>
-				← Back
-			</Link>
+			{!isHomePage && (
+				<Link href="/dashboard" className={styles.backButton}>
+					← Back
+				</Link>
+			)}
 			<div className={styles.formHeader}>
 				<DocumentIcon />
 
@@ -246,18 +254,24 @@ export default function LeadForm() {
 				</div>
 
 				<div className={styles.formGroup}>
-					<label htmlFor="resume" style={{ marginBottom: "0.25rem" }}>
-						Resume/CV{" "}
+					<label
+						htmlFor="resume"
+						style={{ color: "gray", marginBottom: "0.25rem" }}>
+						Resume/CV (PDF, DOC, or DOCX only)
 					</label>
 					<input
 						type="file"
 						id="resume"
 						onChange={handleFileChange}
+						accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 						className={`${styles.fileInput} ${
-							attemptedSubmit && fieldErrors.resume ? styles.inputError : ""
+							(attemptedSubmit && fieldErrors.resume) || fileError
+								? styles.inputError
+								: ""
 						}`}
 					/>
-					{attemptedSubmit && fieldErrors.resume && (
+					{fileError && <div className={styles.fieldError}>{fileError}</div>}
+					{attemptedSubmit && fieldErrors.resume && !fileError && (
 						<div className={styles.fieldError}>{fieldErrors.resume}</div>
 					)}
 				</div>

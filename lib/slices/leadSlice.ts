@@ -26,7 +26,7 @@ const initialState: LeadState = {
 	error: null,
 };
 
-// Thunks
+// thunks
 export const fetchLeads = createAsyncThunk("leads/fetchLeads", async () => {
 	const response = await fetch("/api/leads");
 	if (!response.ok) {
